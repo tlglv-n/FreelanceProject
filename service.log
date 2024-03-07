@@ -1,0 +1,3 @@
+{"level":"info","timestamp":"2024-03-07T15:02:42.338+0500","caller":"app/app.go:60","msg":"http server started on http://localhost:80/swagger/index.html"}
+{"level":"info","timestamp":"2024-03-07T15:06:20.649+0500","caller":"app/app.go:60","msg":"http server started on http://localhost:80/swagger/index.html"}
+{"level":"error","timestamp":"2024-03-07T15:07:35.503+0500","caller":"server/server.go:41","msg":"ERR_SERVE_HTTP","error":"http: Server closed","stacktrace":"exchanger/pkg/server.(*Server).Run.func1\n\t/Users/zande/GolandProjects/exchanger/pkg/server/server.go:41"}
