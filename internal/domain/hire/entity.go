@@ -6,4 +6,5 @@ type Entity struct {
 	Amount      *int    `db:"amount" bson:"amount"`
 	Description *string `db:"description" bson:"description"`
 	Position    *string `db:"position" bson:"position"`
+	CustomerID  string  `db:"customer_id" bson:"customer_id"`
 }

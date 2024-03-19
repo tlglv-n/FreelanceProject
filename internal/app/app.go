@@ -35,6 +35,10 @@ func Run() {
 		return
 	}
 
+	//hiringService, err := hiring.New(
+	//	hiring.WithCustomerRepository()
+	//	)
+
 	handlers, err := handler.New(
 		handler.Dependencies{
 			Configs:     configs,

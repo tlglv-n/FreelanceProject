@@ -10,6 +10,7 @@ type Request struct {
 	Amount      int    `json:"amount"`
 	Description string `json:"description"`
 	Position    string `json:"position"`
+	CustomerID  string `json:"customerid"`
 }
 
 func (s *Request) Bind(r *http.Request) error {
@@ -38,6 +39,7 @@ type Response struct {
 	Amount      int    `json:"amount"`
 	Description string `json:"description"`
 	Position    string `json:"position"`
+	CustomerID  string `json:"customerid"`
 }
 
 func ParseFromEntity(data Entity) (res Response) {
@@ -45,8 +47,9 @@ func ParseFromEntity(data Entity) (res Response) {
 		ID:          data.ID,
 		JobName:     *data.JobName,
 		Amount:      *data.Amount,
-		Description: *data.Position,
+		Description: *data.Description,
 		Position:    *data.Position,
+		CustomerID:  data.CustomerID,
 	}
 	return
 }

@@ -3,7 +3,9 @@ package handler
 import (
 	"exchanger/docs"
 	"exchanger/internal/config"
+	"exchanger/internal/handler/http"
 	"exchanger/internal/service/auth"
+	"exchanger/internal/service/hiring"
 	"exchanger/pkg/server/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -12,11 +14,9 @@ import (
 )
 
 type Dependencies struct {
-	Configs     config.Configs
-	AuthService *auth.Service
-	// TODO: customerService
-	// TODO: hireService
-	// TODO: workerService
+	Configs       config.Configs
+	AuthService   *auth.Service
+	HiringService *hiring.Service
 }
 
 // Configuration is an alias for a function that will take in a pointer to a Handler and modify it
@@ -69,17 +69,17 @@ func WithHTTPHandler() Configuration {
 		h.HTTP.Post("/auth", authHandler.ClientCredentials)
 
 		// Init service handlers
-		// TODO: customerHandler
-		// TODO: hireHandler
-		// TODO: workerHandler
+		customerHandler := http.NewCustomerHandler(h.dependencies.HiringService)
+		hireHandler := http.NewHireHandler(h.dependencies.HiringService)
+		workerHandler := http.NewWorkerService(h.dependencies.HiringService)
 
 		h.HTTP.Route("/", func(r chi.Router) {
 			// use the Bearer Authentication middleware
 			r.Use(oauth.Authorize(h.dependencies.Configs.TOKEN.Salt, nil))
 
-			// TODO: r.Mount("/customers", customerHandler.Routes())
-			// TODO: r.Mount("/hires", hireHandler.Routes())
-			// TODO: r.Mount("/worker", workerHandler.Routes())
+			r.Mount("/customers", customerHandler.Routes())
+			r.Mount("/hires", hireHandler.Routes())
+			r.Mount("/workers", workerHandler.Routes())
 		})
 
 		return

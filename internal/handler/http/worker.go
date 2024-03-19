@@ -2,7 +2,7 @@ package http
 
 import (
 	"errors"
-	"exchanger/internal/domain/customer"
+	"exchanger/internal/domain/worker"
 	"exchanger/internal/service/hiring"
 	"exchanger/pkg/market"
 	"exchanger/pkg/server/response"
@@ -11,15 +11,15 @@ import (
 	"net/http"
 )
 
-type CustomerHandler struct {
+type WorkerHandler struct {
 	hiringService *hiring.Service
 }
 
-func NewCustomerHandler(s *hiring.Service) *CustomerHandler {
-	return &CustomerHandler{hiringService: s}
+func NewWorkerService(s *hiring.Service) *WorkerHandler {
+	return &WorkerHandler{hiringService: s}
 }
 
-func (h *CustomerHandler) Routes() chi.Router {
+func (h *WorkerHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/", h.list)
@@ -34,15 +34,15 @@ func (h *CustomerHandler) Routes() chi.Router {
 	return r
 }
 
-// @Summary	list of customers from the repository
-// @Tags		customers
+// @Summary	list of workers from the repository
+// @Tags		workers
 // @Accept		json
 // @Produce	json
-// @Success	200			{array}		customer.Response
+// @Success	200			{array}		worker.Response
 // @Failure	500			{object}	response.Object
 // @Router		/customers 	[get]
-func (h *CustomerHandler) list(w http.ResponseWriter, r *http.Request) {
-	res, err := h.hiringService.ListCustomers(r.Context())
+func (h *WorkerHandler) list(w http.ResponseWriter, r *http.Request) {
+	res, err := h.hiringService.ListWorkers(r.Context())
 	if err != nil {
 		response.InternalServerError(w, r, err)
 		return
@@ -51,23 +51,23 @@ func (h *CustomerHandler) list(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, r, res)
 }
 
-// @Summary	add a new customer to the repository
-// @Tags		customers
+// @Summary	add a new worker to the repository
+// @Tags		workers
 // @Accept		json
 // @Produce	json
-// @Param		request	body		customer.Request	true	"body param"
-// @Success	200		{object}	customer.Response
+// @Param		request	body		worker.Request	true	"body param"
+// @Success	200		{object}	worker.Response
 // @Failure	400		{object}	response.Object
 // @Failure	500		{object}	response.Object
 // @Router		/customers [post]
-func (h *CustomerHandler) add(w http.ResponseWriter, r *http.Request) {
-	req := customer.Request{}
+func (h *WorkerHandler) add(w http.ResponseWriter, r *http.Request) {
+	req := worker.Request{}
 	if err := render.Bind(r, &req); err != nil {
 		response.BadRequest(w, r, err, req)
 		return
 	}
 
-	res, err := h.hiringService.AddCustomer(r.Context(), req)
+	res, err := h.hiringService.AddWorker(r.Context(), req)
 	if err != nil {
 		response.InternalServerError(w, r, err)
 		return
@@ -75,19 +75,19 @@ func (h *CustomerHandler) add(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, r, res)
 }
 
-// @Summary	get the customer from the repository
-// @Tags		customers
+// @Summary	get the worker from the repository
+// @Tags		workers
 // @Accept		json
 // @Produce	json
 // @Param		id	path		int	true	"path param"
-// @Success	200	{object}	customer.Response
+// @Success	200	{object}	worker.Response
 // @Failure	404	{object}	response.Object
 // @Failure	500	{object}	response.Object
-// @Router		/customers/{id} [get]
-func (h *CustomerHandler) get(w http.ResponseWriter, r *http.Request) {
+// @Router		/workers/{id} [get]
+func (h *WorkerHandler) get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	res, err := h.hiringService.GetCustomer(r.Context(), id)
+	res, err := h.hiringService.GetWorker(r.Context(), id)
 	if err != nil {
 		switch {
 		case errors.Is(err, market.ErrorNotFound):
@@ -101,27 +101,27 @@ func (h *CustomerHandler) get(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, r, res)
 }
 
-// @Summary	update the customer in the repository
-// @Tags		customers
+// @Summary	update the worker in the repository
+// @Tags		workers
 // @Accept		json
 // @Produce	json
 // @Param		id		path	int				true	"path param"
-// @Param		request	body	customer.Request	true	"body param"
+// @Param		request	body	worker.Request	true	"body param"
 // @Success	200
 // @Failure	400	{object}	response.Object
 // @Failure	404	{object}	response.Object
 // @Failure	500	{object}	response.Object
-// @Router		/customers/{id} [put]
-func (h *CustomerHandler) update(w http.ResponseWriter, r *http.Request) {
+// @Router		/workers/{id} [put]
+func (h *WorkerHandler) update(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	req := customer.Request{}
+	req := worker.Request{}
 	if err := render.Bind(r, &req); err != nil {
 		response.BadRequest(w, r, err, req)
 		return
 	}
 
-	if err := h.hiringService.UpdateCustomer(r.Context(), id, req); err != nil {
+	if err := h.hiringService.UpdateWorker(r.Context(), id, req); err != nil {
 		switch {
 		case errors.Is(err, market.ErrorNotFound):
 			response.NotFound(w, r, err)
@@ -132,8 +132,8 @@ func (h *CustomerHandler) update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// @Summary	delete the customer from the repository
-// @Tags		customers
+// @Summary	delete the worker from the repository
+// @Tags		workers
 // @Accept		json
 // @Produce	json
 // @Param		id	path	int	true	"path param"
@@ -141,10 +141,10 @@ func (h *CustomerHandler) update(w http.ResponseWriter, r *http.Request) {
 // @Failure	404	{object}	response.Object
 // @Failure	500	{object}	response.Object
 // @Router		/customers/{id} [delete]
-func (h *CustomerHandler) delete(w http.ResponseWriter, r *http.Request) {
+func (h *WorkerHandler) delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	if err := h.hiringService.DeleteCustomer(r.Context(), id); err != nil {
+	if err := h.hiringService.DeleteWorker(r.Context(), id); err != nil {
 		switch {
 		case errors.Is(err, market.ErrorNotFound):
 			response.NotFound(w, r, err)
