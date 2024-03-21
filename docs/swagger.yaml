@@ -15,6 +15,34 @@ definitions:
       pseudonym:
         type: string
     type: object
+  hire.Request:
+    properties:
+      amount:
+        type: integer
+      customerid:
+        type: string
+      description:
+        type: string
+      jobname:
+        type: string
+      position:
+        type: string
+    type: object
+  hire.Response:
+    properties:
+      amount:
+        type: integer
+      customerid:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      jobname:
+        type: string
+      position:
+        type: string
+    type: object
   response.Object:
     properties:
       data: {}
@@ -22,6 +50,30 @@ definitions:
         type: string
       success:
         type: boolean
+    type: object
+  worker.Request:
+    properties:
+      description:
+        type: string
+      fullname:
+        type: string
+      position:
+        type: string
+      pseudonym:
+        type: string
+    type: object
+  worker.Response:
+    properties:
+      description:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: string
+      position:
+        type: string
+      pseudonym:
+        type: string
     type: object
 info:
   contact: {}
@@ -37,15 +89,15 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/customer.Response'
+              $ref: '#/definitions/worker.Response'
             type: array
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Object'
-      summary: list of customers from the repository
+      summary: list of workers from the repository
       tags:
-      - customers
+      - workers
     post:
       consumes:
       - application/json
@@ -55,14 +107,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/customer.Request'
+          $ref: '#/definitions/worker.Request'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/customer.Response'
+            $ref: '#/definitions/worker.Response'
         "400":
           description: Bad Request
           schema:
@@ -71,9 +123,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Object'
-      summary: add a new customer to the repository
+      summary: add a new worker to the repository
       tags:
-      - customers
+      - workers
   /customers/{id}:
     delete:
       consumes:
@@ -97,9 +149,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.Object'
-      summary: delete the customer from the repository
+      summary: delete the worker from the repository
       tags:
-      - customers
+      - workers
     get:
       consumes:
       - application/json
@@ -162,4 +214,203 @@ paths:
       summary: update the customer in the repository
       tags:
       - customers
+  /hires:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/hire.Response'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: list of hires from the repository
+      tags:
+      - hires
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: body param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/hire.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hire.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: add a new hire to the repository
+      tags:
+      - hires
+  /hires/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: delete the hire from the repository
+      tags:
+      - hires
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hire.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: get the hire from the repository
+      tags:
+      - hires
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: body param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/hire.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Object'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: update the hire in the repository
+      tags:
+      - hires
+  /workers/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/worker.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: get the worker from the repository
+      tags:
+      - workers
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: path param
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: body param
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/worker.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Object'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Object'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Object'
+      summary: update the worker in the repository
+      tags:
+      - workers
 swagger: "2.0"

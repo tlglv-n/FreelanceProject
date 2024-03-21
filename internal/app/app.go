@@ -4,7 +4,9 @@ import (
 	"context"
 	"exchanger/internal/config"
 	"exchanger/internal/handler"
+	"exchanger/internal/repository"
 	"exchanger/internal/service/auth"
+	"exchanger/internal/service/hiring"
 	"exchanger/pkg/log"
 	"exchanger/pkg/server"
 	"flag"
@@ -29,20 +31,34 @@ func Run() {
 	//	URL: configs.CURRENCY.URL,
 	//})
 
+	repositories, err := repository.New(
+		repository.WithMemoryStore())
+	if err != nil {
+		logger.Error("ERR_INIT_REPOSITORIES", zap.Error(err))
+		return
+	}
+	defer repositories.Close()
+
 	authService, err := auth.New()
 	if err != nil {
 		logger.Error("ERR_INIT_AUTH_SERVICE", zap.Error(err))
 		return
 	}
 
-	//hiringService, err := hiring.New(
-	//	hiring.WithCustomerRepository()
-	//	)
+	hiringService, err := hiring.New(
+		hiring.WithCustomerRepository(repositories.Customer),
+		hiring.WithHireRepository(repositories.Hire),
+		hiring.WithWorkerRepository(repositories.Worker))
+	if err != nil {
+		logger.Error("ERR_INIT_HIRING_SERVICE", zap.Error(err))
+		return
+	}
 
 	handlers, err := handler.New(
 		handler.Dependencies{
-			Configs:     configs,
-			AuthService: authService,
+			Configs:       configs,
+			AuthService:   authService,
+			HiringService: hiringService,
 		}, handler.WithHTTPHandler())
 	if err != nil {
 		logger.Error("ERR_INIT_HANDLERS", zap.Error(err))
